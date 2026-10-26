@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#090b12"><meta name="description" content="A free Solo Leveling-inspired real-life quest tracker.">
+<title>Awakening — Player System</title>
+<link rel="manifest" href="manifest.json">
+<style>
+:root{color-scheme:dark;--bg:#090b12;--surface:#121722;--surface2:#171e2b;--line:#293447;--text:#edf2fb;--muted:#8e9bb0;--blue:#62b8ff;--cyan:#8be9fd;--purple:#b7a0ff;--gold:#ffd166;--green:#65e6ad;--red:#ff708d}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:15px/1.45 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;padding-bottom:calc(26px + env(safe-area-inset-bottom))}
+button,input,select{font:inherit}button{cursor:pointer}button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
+header{padding:24px 18px 18px;background:linear-gradient(180deg,#131b2a,#090b12);border-bottom:1px solid var(--line)}
+.kicker{font-size:10px;letter-spacing:3px;font-weight:800;color:var(--cyan)}h1{margin:5px 0 3px;font-size:27px;letter-spacing:1px}header p{margin:0;color:var(--muted);font-size:12px}
+.wrap{max-width:650px;margin:auto;padding:14px;display:grid;gap:13px}.card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px;min-width:0}.cardhead{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:13px}.card h2{font-size:12px;letter-spacing:1.7px;color:var(--cyan);margin:0}.tag{border:1px solid #3c4a60;background:#1a2332;padding:4px 8px;border-radius:7px;color:var(--muted);font-size:10px;font-weight:800;white-space:nowrap}
+.playerrow{display:flex;align-items:center;gap:13px}.avatar{width:55px;height:55px;flex-shrink:0;border-radius:15px;border:1px solid #315475;background:linear-gradient(145deg,#19385a,#111a2b);display:grid;place-items:center;color:var(--cyan);font-size:25px;font-weight:900;text-shadow:0 0 15px #62b8ff}.playername{font-weight:850;font-size:20px;overflow-wrap:anywhere}.muted{color:var(--muted);font-size:12px}.levelrow{display:flex;justify-content:space-between;align-items:center;margin-top:16px;font-size:12px;font-weight:800}.bar{height:8px;background:#252e3d;border-radius:20px;overflow:hidden;margin:8px 0}.fill{height:100%;width:0;background:linear-gradient(90deg,#4a8cff,#8be9fd);border-radius:20px;transition:width .25s}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:13px}.stat{background:var(--surface2);border:1px solid #263348;border-radius:11px;padding:10px 4px;text-align:center}.stat strong{display:block;font-size:22px}.stat span{font-size:9px;letter-spacing:1px;color:var(--muted)}
+.quickstats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.quick{padding:12px 8px;background:var(--surface2);border-radius:12px;border:1px solid #253247}.quick strong{font-size:20px;display:block}.quick span{font-size:10px;color:var(--muted)}
+.btn{border:1px solid #385a7b;border-radius:10px;background:#1b3855;color:#f1f7ff;padding:11px 13px;font-weight:750;font-size:13px}.btn:active{transform:scale(.98)}.btn.secondary{background:#1a202c;border-color:#364153}.btn.danger{background:#3b2029;border-color:#764050}.btn.small{padding:7px 10px;font-size:11px}.btn.full{width:100%}.input{width:100%;min-width:0;padding:12px;background:#0b1019;border:1px solid #344156;border-radius:10px;color:var(--text)}.form{display:flex;gap:8px}.form>*{min-width:0}.form .input{flex:1}.form .btn{flex-shrink:0}
+.quest{display:flex;align-items:center;gap:10px;padding:12px 0;border-bottom:1px solid #242e3d}.quest:last-child{border-bottom:0}.quest input{width:19px;height:19px;accent-color:var(--blue);flex-shrink:0}.questbody{flex:1;min-width:0}.questname{font-size:13px;font-weight:650;overflow-wrap:anywhere}.quest.done .questname{text-decoration:line-through;color:var(--muted)}.questmeta{font-size:10px;color:var(--muted);margin-top:3px}.reward{font-size:11px;color:var(--gold);font-weight:800;white-space:nowrap}.questactions{display:flex;gap:5px;align-items:center}.empty{color:var(--muted);font-size:12px;padding:10px 0}
+.sectiongap{margin-top:15px}.two{display:grid;grid-template-columns:1fr 1fr;gap:8px}.badgegrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.achievement{border:1px solid #293447;background:#0e131d;border-radius:11px;padding:11px;opacity:.45}.achievement.unlocked{opacity:1;border-color:#6b5a32;background:#211e18}.achievement .emoji{font-size:21px}.achievement strong{display:block;font-size:12px;margin:3px 0}.achievement span{font-size:10px;color:var(--muted)}
+.log{font-size:11px;color:#aab6c8;max-height:150px;overflow:auto}.logline{padding:7px 0;border-bottom:1px solid #242e3d}.note{font-size:11px;color:var(--muted);line-height:1.55}.toast{position:fixed;bottom:16px;left:50%;transform:translate(-50%,20px);background:#e8f6ff;color:#101827;padding:11px 16px;border-radius:11px;font-size:12px;font-weight:800;opacity:0;pointer-events:none;transition:.2s;z-index:5;max-width:90%;text-align:center}.toast.show{opacity:1;transform:translate(-50%,0)}
+footer{text-align:center;color:#65748c;font-size:10px;padding:10px 18px}
+@media(min-width:600px){header{text-align:center}.wrap{padding-top:20px}.card{padding:19px}}
+</style>
+</head>
+<body>
+<header><div class="kicker">PLAYER INTERFACE / REAL-LIFE MODE</div><h1>AWAKENING</h1><p>Small missions. Real progress. Your next level starts today.</p></header>
+<main class="wrap">
+<section class="card">
+ <div class="cardhead"><h2>PLAYER PROFILE</h2><span class="tag" id="rank">RANK E</span></div>
+ <div class="playerrow"><div class="avatar" id="avatar">P</div><div style="min-width:0;flex:1"><div class="playername" id="playerName">PLAYER</div><div class="muted">Awakened human • Personal development</div><div class="muted" style="margin-top:3px">Level <b id="level">1</b></div></div><button class="btn secondary small" id="editName">Edit</button></div>
+ <div class="levelrow"><span>EXPERIENCE</span><span><span id="xpCurrent">0</span> / <span id="xpNext">100</span> XP</span></div><div class="bar"><div class="fill" id="xpBar"></div></div>
+ <div class="stats"><div class="stat"><strong id="strength">1</strong><span>STRENGTH</span></div><div class="stat"><strong id="focus">1</strong><span>FOCUS</span></div><div class="stat"><strong id="discipline">1</strong><span>DISCIPLINE</span></div></div>
+</section>
+<section class="quickstats">
+ <div class="quick"><strong id="streak">0 🔥</strong><span>DAY STREAK</span></div>
+ <div class="quick"><strong id="doneCount">0/0</strong><span>QUESTS DONE</span></div>
+ <div class="quick"><strong id="achievementCount">0</strong><span>ACHIEVEMENTS</span></div>
+</section>
+<section class="card">
+ <div class="cardhead"><h2>DAILY QUESTS</h2><span class="tag" id="dateTag">TODAY</span></div>
+ <div id="dailyQuests"></div>
+ <div class="bar"><div class="fill" id="dailyBar"></div></div>
+ <div class="muted" id="dailySummary">Complete quests to make progress.</div>
+ <div class="two sectiongap"><button class="btn full" id="claimBtn">Claim XP</button><button class="btn secondary full" id="refreshBtn">Reset daily checklist</button></div>
+</section>
+<section class="card">
+ <div class="cardhead"><h2>CREATE YOUR OWN QUEST</h2><span class="tag">CUSTOM</span></div>
+ <form id="questForm">
+  <input class="input" id="questTitle" maxlength="70" placeholder="e.g. Revise biology for 30 minutes" required>
+  <div class="form sectiongap"><select class="input" id="questReward" aria-label="Quest difficulty"><option value="10">Easy · 10 XP</option><option value="20" selected>Medium · 20 XP</option><option value="35">Hard · 35 XP</option><option value="50">Boss · 50 XP</option></select><button class="btn" type="submit">Add quest</button></div>
+ </form>
+ <p class="note">Choose realistic missions you can actually complete. Custom quests reset daily along with the default checklist.</p>
+</section>
+<section class="card">
+ <div class="cardhead"><h2>ACHIEVEMENTS</h2><span class="tag">MILESTONES</span></div>
+ <div class="badgegrid" id="achievements"></div>
+</section>
+<section class="card">
+ <div class="cardhead"><h2>SYSTEM LOG</h2><button class="btn secondary small" id="clearLog">Clear</button></div><div class="log" id="systemLog"></div>
+</section>
+<section class="card">
+ <div class="cardhead"><h2>DATA & SETTINGS</h2></div>
+ <div class="two"><button class="btn secondary full" id="exportBtn">Export save</button><button class="btn secondary full" id="importBtn">Import save</button></div>
+ <input type="file" id="importFile" accept="application/json,.json" hidden>
+ <p class="note">Your save stays on this device in this browser. Export a backup before clearing browser data or moving phones. This is a fan-inspired personal productivity tool, not an official Solo Leveling product.</p>
+ <button class="btn danger full" id="resetAll">Reset all progress</button>
+</section>
+</main>
+<footer>AWAKENING SYSTEM · Free personal habit tracker · No account required</footer>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<script>
+const STORAGE_KEY="awakening-mobile-v2";
+const DEFAULTS=[
+ {id:"move",title:"Move your body for 20 minutes",xp:20,stat:"strength"},
+ {id:"focus",title:"Focus on learning for 25 minutes",xp:20,stat:"focus"},
+ {id:"water",title:"Drink water regularly",xp:10,stat:"discipline"},
+ {id:"plan",title:"Write down your top 3 priorities",xp:10,stat:"discipline"},
+ {id:"winddown",title:"Prepare for a consistent bedtime",xp:10,stat:"strength"}
+];
+const ACHIEVEMENTS=[
+ {id:"first",emoji:"⚡",name:"First Awakening",desc:"Claim XP for your first quest",test:s=>s.totalClaimed>=1},
+ {id:"ten",emoji:"🎯",name:"Quest Hunter",desc:"Claim 10 quests",test:s=>s.totalClaimed>=10},
+ {id:"fifty",emoji:"💠",name:"Grinder",desc:"Claim 50 quests",test:s=>s.totalClaimed>=50},
+ {id:"streak3",emoji:"🔥",name:"On a Roll",desc:"Reach a 3-day streak",test:s=>s.bestStreak>=3},
+ {id:"streak7",emoji:"👑",name:"Unbreakable",desc:"Reach a 7-day streak",test:s=>s.bestStreak>=7},
+ {id:"level5",emoji:"🗡️",name:"Rising Hunter",desc:"Reach level 5",test:s=>levelFor(s.xp).level>=5}
+];
+const todayKey=()=>{const d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")};
+const dateLabel=()=>new Date().toLocaleDateString(undefined,{weekday:"short",month:"short",day:"numeric"});
+function makeDaily(){return DEFAULTS.map(q=>({...q,done:false,claimed:false,custom:false}))}
+function initial(){return {name:"PLAYER",xp:0,stats:{strength:1,focus:1,discipline:1},lastDate:todayKey(),streak:0,bestStreak:0,activeDays:[],totalClaimed:0,unlocked:[],quests:makeDaily(),log:["System initialized. Welcome, Player."]}}
+let state=loadState();
+function loadState(){try{const raw=localStorage.getItem(STORAGE_KEY);if(raw){const s=JSON.parse(raw);if(s&&Array.isArray(s.quests)&&s.stats&&typeof s.xp==="number")return s}}catch(e){}return initial()}
+function levelFor(xp){let level=1,remaining=Math.max(0,xp);while(remaining>=level*100){remaining-=level*100;level++}return {level,within:remaining,next:level*100}}
+function rankFor(l){return l>=30?"RANK S":l>=20?"RANK A":l>=12?"RANK B":l>=7?"RANK C":l>=3?"RANK D":"RANK E"}
+function toast(msg){const el=document.getElementById("toast");el.textContent=msg;el.classList.add("show");clearTimeout(toast.timer);toast.timer=setTimeout(()=>el.classList.remove("show"),2300)}
+function log(msg){state.log.unshift(new Date().toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"})+" · "+msg);state.log=state.log.slice(0,35)}
+function save(){try{localStorage.setItem(STORAGE_KEY,JSON.stringify(state))}catch(e){toast("Could not save. Export your progress if possible.")}render()}
+function updateDay(){
+ const now=todayKey();if(state.lastDate===now)return;
+ const previous=state.lastDate;
+ const oldDate=new Date(previous+"T12:00:00");const newDate=new Date(now+"T12:00:00");
+ const diff=Math.round((newDate-oldDate)/86400000);
+ if(diff===1&&state.activeDays.includes(previous)){state.streak=(state.streak||0)+1}else{state.streak=0}
+ state.bestStreak=Math.max(state.bestStreak||0,state.streak);
+ state.lastDate=now;state.quests=makeDaily();log("New day detected. Daily quests refreshed.");save();
+}
+function checkAchievements(){
+ ACHIEVEMENTS.forEach(a=>{if(!state.unlocked.includes(a.id)&&a.test(state)){state.unlocked.push(a.id);log("Achievement unlocked: "+a.name);toast("Achievement unlocked: "+a.name)}});
+}
+function el(tag,cls,txt){const e=document.createElement(tag);if(cls)e.className=cls;if(txt!==undefined)e.textContent=txt;return e}
+function render(){
+ const lv=levelFor(state.xp);state.level=lv.level;
+ document.getElementById("playerName").textContent=state.name||"PLAYER";
+ document.getElementById("avatar").textContent=(state.name||"P").trim().charAt(0).toUpperCase();
+ document.getElementById("rank").textContent=rankFor(lv.level);
+ document.getElementById("level").textContent=lv.level;
+ document.getElementById("xpCurrent").textContent=lv.within;
+ document.getElementById("xpNext").textContent=lv.next;
+ document.getElementById("xpBar").style.width=(lv.within/lv.next*100)+"%";
+ ["strength","focus","discipline"].forEach(k=>document.getElementById(k).textContent=state.stats[k]||1);
+ document.getElementById("streak").textContent=(state.streak||0)+" 🔥";
+ document.getElementById("dateTag").textContent=dateLabel().toUpperCase();
+ const done=state.quests.filter(q=>q.done).length;
+ document.getElementById("doneCount").textContent=done+"/"+state.quests.length;
+ document.getElementById("dailyBar").style.width=(state.quests.length?done/state.quests.length*100:0)+"%";
+ document.getElementById("dailySummary").textContent=done===state.quests.length&&done>0?"All quests checked. Claim your XP to lock in the reward.":done+" of "+state.quests.length+" quests checked.";
+ const list=document.getElementById("dailyQuests");list.replaceChildren();
+ if(!state.quests.length)list.append(el("div","empty","No quests yet. Add your first quest below."));
+ state.quests.forEach(q=>{
+  const row=el("div","quest"+(q.done?" done":""));const cb=document.createElement("input");cb.type="checkbox";cb.checked=!!q.done;cb.disabled=!!q.claimed;cb.setAttribute("aria-label","Complete "+q.title);
+  cb.addEventListener("change",()=>{q.done=cb.checked;log((q.done?"Checked: ":"Unchecked: ")+q.title);save()});
+  const body=el("div","questbody");body.append(el("div","questname",q.title),el("div","questmeta",q.claimed?"Reward claimed":q.custom?"Custom mission":"Daily mission"));
+  const reward=el("span","reward","+"+q.xp+" XP");
+  row.append(cb,body,reward);
+  if(q.custom&&!q.claimed){const del=el("button","btn secondary small","×");del.setAttribute("aria-label","Delete "+q.title);del.onclick=()=>{state.quests=state.quests.filter(x=>x.id!==q.id);log("Removed quest: "+q.title);save()};row.append(del)}
+  list.append(row);
+ });
+ const ach=document.getElementById("achievements");ach.replaceChildren();
+ ACHIEVEMENTS.forEach(a=>{const unlocked=state.unlocked.includes(a.id);const card=el("div","achievement"+(unlocked?" unlocked":""));card.append(el("div","emoji",a.emoji),el("strong", "",a.name),el("span","",unlocked?"UNLOCKED · "+a.desc:a.desc));ach.append(card)});
+ const logbox=document.getElementById("systemLog");logbox.replaceChildren();if(!state.log.length)logbox.append(el("div","empty","No system activity yet."));state.log.slice(0,18).forEach(line=>logbox.append(el("div","logline",line)));
+ document.getElementById("achievementCount").textContent=state.unlocked.length;
+}
+document.getElementById("editName").onclick=()=>{const name=prompt("Choose your player name:",state.name||"PLAYER");if(name===null)return;const clean=name.trim().slice(0,22);if(clean){state.name=clean;log("Player name updated.");save()}};
+document.getElementById("claimBtn").onclick=()=>{
+ const ready=state.quests.filter(q=>q.done&&!q.claimed);if(!ready.length){toast("Check off a quest before claiming XP.");return}
+ let gained=0;const oldLevel=levelFor(state.xp).level;
+ ready.forEach(q=>{q.claimed=true;gained+=q.xp;state.stats[q.stat||"discipline"]=(state.stats[q.stat||"discipline"]||1)+1;state.totalClaimed=(state.totalClaimed||0)+1});
+ state.xp+=gained;
+ if(!state.activeDays.includes(todayKey()))state.activeDays.push(todayKey());
+ state.activeDays=state.activeDays.slice(-400);
+ const oldStreak=state.streak||0;state.streak=Math.max(1,oldStreak);state.bestStreak=Math.max(state.bestStreak||0,state.streak);
+ const newLevel=levelFor(state.xp).level;log("Claimed "+gained+" XP from "+ready.length+" quest(s)."+(newLevel>oldLevel?" Level up! Now level "+newLevel+".":""));
+ checkAchievements();save();toast("+"+gained+" XP claimed!");
+};
+document.getElementById("questForm").addEventListener("submit",e=>{
+ e.preventDefault();const title=document.getElementById("questTitle").value.trim();if(!title)return;
+ const xp=Number(document.getElementById("questReward").value);
+ state.quests.push({id:"custom-"+Date.now()+"-"+Math.random().toString(36).slice(2,7),title,xp,stat:"focus",done:false,claimed:false,custom:true});
+ document.getElementById("questTitle").value="";log("Quest created: "+title);save();toast("Quest added.");
+});
+document.getElementById("refreshBtn").onclick=()=>{
+ if(!confirm("Reset today's checklist? Any unclaimed completions will be lost, but claimed XP stays."))return;
+ state.quests=makeDaily();log("Daily checklist manually reset.");save();toast("Checklist refreshed.");
+};
+document.getElementById("clearLog").onclick=()=>{state.log=[];save()};
+document.getElementById("exportBtn").onclick=()=>{
+ const blob=new Blob([JSON.stringify(state,null,2)],{type:"application/json"});const url=URL.createObjectURL(blob);const a=document.createElement("a");a.href=url;a.download="awakening-save-"+todayKey()+".json";a.click();URL.revokeObjectURL(url);toast("Save exported.");
+};
+document.getElementById("importBtn").onclick=()=>document.getElementById("importFile").click();
+document.getElementById("importFile").onchange=async e=>{
+ const file=e.target.files&&e.target.files[0];if(!file)return;
+ try{const s=JSON.parse(await file.text());if(!s||!Array.isArray(s.quests)||typeof s.xp!=="number"||!s.stats)throw Error("Invalid save");
+  if(!confirm("Import this save and replace the current progress?"))return;
+  state={...initial(),...s};state.stats={...initial().stats,...s.stats};state.unlocked=Array.isArray(s.unlocked)?s.unlocked:[];state.log=Array.isArray(s.log)?s.log:[];log("Save imported.");save();toast("Save imported.");
+ }catch(err){alert("That file is not a valid Awakening System save.")}finally{e.target.value=""}
+};
+document.getElementById("resetAll").onclick=()=>{if(confirm("Permanently reset all XP, levels, stats, achievements, streaks, and quests on this device? Export a save first if you want a backup.")){state=initial();save();toast("System reset.")}};
+updateDay();checkAchievements();render();
+if("serviceWorker" in navigator && (location.protocol==="https:" || location.hostname==="localhost")) {
+ navigator.serviceWorker.register("./sw.js").catch(()=>{});
+}
+</script>
+</body></html>

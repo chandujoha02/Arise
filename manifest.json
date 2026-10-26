@@ -1,0 +1,19 @@
+{
+  "name": "Awakening System",
+  "short_name": "Awakening",
+  "description": "A free Solo Leveling-inspired real-life quest tracker.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#090b12",
+  "theme_color": "#090b12",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
